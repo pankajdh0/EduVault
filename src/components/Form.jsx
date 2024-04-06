@@ -9,6 +9,7 @@ class StudentInformation extends React.Component {
         class: "",
         uid: "",
         studentName: "",
+        photograph:"",
         branch: "",
         dob: "",
         bloodGroup: "",
@@ -21,6 +22,7 @@ class StudentInformation extends React.Component {
         motherOccupation: "",
         hobbies: "",
         strengthAndWeaknesses: "",
+        Result:"",
         sem1CGPA: "",
         sem2CGPA: "",
         sem3CGPA: "",
@@ -56,16 +58,93 @@ class StudentInformation extends React.Component {
         goals: "",
         achievements: [],
         anyOther: "",
-        signature: ""
+        signature: "",
+        errors:{}
     };
+
+
+    // Error messages mapping
+    errorMessages = {
+        sem: 'Semester is required.',
+        class: 'Class is required.',
+        uid: 'UID is required.',
+        studentName: 'Name is required.',
+        photograph:'Photograph is required. ',
+        branch: "Branch is required. ",
+        dob: "DOB is required. ",
+        bloodGroup: "BloodGroup is required. ",
+        tempAddress: "Address is required. ",
+        permAddress: "Address is required. ",
+        fatherPhone: "Phone no is required. ",
+        motherPhone: "Phone no is required. ",
+        studentPhone: "Phone no is required. ",
+        fatherOccupation: "Occupation is required. ",
+        motherOccupation: "Occupation is required. ",
+        hobbies: "hobbies is required",
+        strengthAndWeaknesses: "Strength and weakness is required. ",
+        Result:"Result is required. ",
+        areaOfInterest: " Area of Interest is reuired. ",
+        goals: "Goals is required. ",
+        anyOther: "This is required (type NA if not). ",
+        signature: "Signature is required. ",
+        // Add other fields and their error messages here
+    };
+
     handleChange = (e) => {
+        const { name, value } = event.target;
+           
+        // Error validation for empty fields
+        const errors = { ...this.state.errors };
+        if (value.trim() === '') {
+            errors[name] = this.errorMessages[name] || 'This field is required.';
+        } else {
+            errors[name] = ''; // Clear error if field is not empty
+        }
+
         this.setState({
-            [e.target.name]: e.target.value
+            [name]: value,
+            errors
         });
+
+    // Validate UID field
+       if (name === 'uid') {
+
+        if (!/[a-zA-Z]/.test(value)) {
+            this.setState({ [name]: value });
+        }else {
+            this.setState({ [name]: '' });
+        } 
+       }
+       else{
+        this.setState({ [name]: value });
+       }
+        
+        
+    
     };
 
     handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Error validation for empty fields
+    const errors = {};
+    for (const key in this.state) {
+        if (this.state.hasOwnProperty(key) && key !== 'errors') {
+            let value = this.state[key];
+            if (typeof value !== 'string') {
+                value = String(value); // Convert non-string values to string
+            }
+            if (value.trim() === '') {
+                errors[key] = this.errorMessages[key] || 'This field is required.';
+            }
+        }
+    }
+    if (Object.keys(errors).length > 0) {
+        this.setState({ errors });
+      //  console.log('Please fill in all required fields.');
+        return; // Exit submission if any field is empty
+    }
+
         try {
             const response = await axios.post("http://localhost:5000/students", this.state);
             console.log("Student data submitted successfully:", response.data);
@@ -128,8 +207,15 @@ class StudentInformation extends React.Component {
             console.error("Error submitting student data:", error);
         }
     };
+        
+
+    
 
     render() {
+
+
+        const { errors } = this.state;
+
         return (
 
             <>
@@ -156,16 +242,22 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-4">
                                             <label className="col-form-label text-end">SEM:</label>
                                             <input type="text" className="form-control" name="sem" value={this.state.sem} onChange={this.handleChange} />
+                                            {errors.sem && <div className="text-danger">{errors.sem}</div>}
+                                            
                                         </div>
 
                                         <div className="col-md-4">
                                             <label className="col-form-label text-end">CLASS:</label>
                                             <input type="text" className="form-control" name="class" value={this.state.class} onChange={this.handleChange} />
+                                            {errors.class && <div className="text-danger">{errors.class}</div>}
+
                                         </div>
 
                                         <div className="col-md-4">
                                             <label className="col-form-label text-end">UID NO:</label>
-                                            <input type="text" className="form-control" name="uid" value={this.state.uid} onChange={this.handleChange} />
+                                            <input type="text" className="form-control" name="uid" value={this.state.uid} onChange={this.handleChange} maxLength={10}/>
+                                            {errors.uid && <div className="text-danger">{errors.uid}</div>}
+
                                         </div>
                                     </div>
 
@@ -173,13 +265,18 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Name of the Student:</label>
                                             <input type="text" className="form-control" name="studentName" value={this.state.studentName} onChange={this.handleChange} />
+                                            {errors.studentName && <div className="text-danger">{errors.studentName}</div>}
+
                                         </div>
                                     </div>
 
                                     <div className="row mb-3">
                                         <div className="col-md-12">
-                                            <label className="col-form-label text-end">Photograph:</label>
-                                            <input type="file" className="form-control" accept=".pdf,.jpg,.jpeg" />
+                                            <label className="col-form-label text-end" >Photograph:</label>
+                                            <input type="file" className="form-control" name="photograph" value={this.state.photograph} accept=".pdf,.jpg,.jpeg" onChange={this.handleChange}/>
+                                            {errors.photograph && <div className="text-danger">{errors.photograph}</div>}
+
+
                                         </div>
                                     </div>
 
@@ -187,10 +284,14 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-6">
                                             <label className="col-form-label text-end ">Date of Birth:</label>
                                             <input type="text" className="form-control" name="dob" value={this.state.dob} onChange={this.handleChange} />
+                                            {errors.dob && <div className="text-danger">{errors.dob}</div>}
+
                                         </div>
                                         <div className="col-md-6">
                                             <label className="col-form-label text-end">Blood Group:</label>
                                             <input type="text" className="form-control" name="bloodGroup" value={this.state.bloodGroup} onChange={this.handleChange} />
+                                            {errors.bloodGroup && <div className="text-danger">{errors.bloodGroup}</div>}
+
                                         </div>
                                     </div>
 
@@ -198,6 +299,8 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Branch:</label>
                                             <input type="text" className="form-control" name="branch" value={this.state.branch} onChange={this.handleChange} />
+                                            {errors.branch && <div className="text-danger">{errors.branch}</div>}
+
                                         </div>
                                     </div>
 
@@ -205,6 +308,8 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Temporary Address:</label>
                                             <input type="text" className="form-control" name="tempAddress" value={this.state.tempAddress} onChange={this.handleChange} />
+                                            {errors.tempAddress && <div className="text-danger">{errors.tempAddress}</div>}
+
                                         </div>
                                     </div>
 
@@ -212,6 +317,8 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Permanent Address:</label>
                                             <input type="text" className="form-control" name="permAddress" value={this.state.permAddress} onChange={this.handleChange} />
+                                            {errors.permAddress && <div className="text-danger">{errors.permAddress}</div>}
+
                                         </div>
                                     </div>
 
@@ -219,6 +326,8 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Father's Occupation:</label>
                                             <input type="text" className="form-control" name="fatherOccupation" value={this.state.fatherOccupation} onChange={this.handleChange} />
+                                            {errors.fatherOccupation && <div className="text-danger">{errors.fatherOccupation}</div>}
+
                                         </div>
                                     </div>
 
@@ -226,6 +335,8 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Mother's Occupation:</label>
                                             <input type="text" className="form-control" name="motherOccupation" value={this.state.motherOccupation} onChange={this.handleChange} />
+                                            {errors.motherOccupation && <div className="text-danger">{errors.motherOccupation}</div>}
+
                                         </div>
                                     </div>
 
@@ -233,6 +344,8 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Hobbies:</label>
                                             <input type="text" className="form-control" name="hobbies" value={this.state.hobbies} onChange={this.handleChange} />
+                                            {errors.hobbies && <div className="text-danger">{errors.hobbies}</div>}
+
                                         </div>
                                     </div>
 
@@ -240,6 +353,8 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Strength and Weaknesses:</label>
                                             <input type="text" className="form-control" name="strengthAndWeaknesses" value={this.state.strengthAndWeaknesses} onChange={this.handleChange} />
+                                            {errors.strengthAndWeaknesses && <div className="text-danger">{errors.strengthAndWeaknesses}</div>}
+
                                         </div>
                                     </div>
 
@@ -247,6 +362,7 @@ class StudentInformation extends React.Component {
                                         <div className="col-md-12">
                                             <label className="col-form-label text-end">Result: Final Mark (with percentage):</label>
                                             <input type="text" className="form-control" name="Result" value={this.state.Result} onChange={this.handleChange} />
+                                            {errors.Result && <div className="text-danger">{errors.Result}</div>}
 
                                         </div>
                                     </div>
@@ -577,9 +693,11 @@ class StudentInformation extends React.Component {
                                         <div className=" col-md-12">
                                             <label className="col-form-label text-end">Area of interest:</label>
                                             <input type="text" className=" form-control" name="AreaOfInterest" />
+                                            {errors.areaOfInterest && <div className="text-danger">{errors.areaOfInterest}</div>}
 
                                             <label className="col-form-label text-end">Goals/Future Plans (After BE):</label>
                                             <input type="text" className="form-control" name="goalsFuturePlans" />
+                                            {errors.goals && <div className="text-danger">{errors.goals}</div>}
                                         </div>
                                     </div>
 
@@ -650,9 +768,12 @@ class StudentInformation extends React.Component {
                                         <div className=" col-md-12">
                                             <label className="col-form-label text-end">Any other:</label>
                                             <input type="text" className=" form-control" name="anyOther" value={this.state.anyOther} onChange={this.handleChange} />
+                                            {errors.anyOther && <div className="text-danger">{errors.anyOther}</div>}
 
                                             <label className="col-form-label text-end mt-2">Signature of student</label>
-                                            <input type="file" className=" form-control" accept=".pdf,.jpg,.jpeg" />
+                                            <input type="file" className=" form-control" name="signature" accept=".pdf,.jpg,.jpeg" onChange={this.handleChange} />
+                                            {errors.signature && <div className="text-danger">{errors.signature}</div>}
+
                                             <br />
 
                                         </div>
