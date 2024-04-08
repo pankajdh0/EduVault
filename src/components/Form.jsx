@@ -179,7 +179,7 @@ function StudentInformation() {
 
                             <div className="text-center mt-3">
                                 {/* <h2 className="mt-3 fs-4 fw-bold underline" >DEPARTMENT OF COMPUTER ENGINEERING</h2> */}
-                                <h2 className="fs-4 fw-bolder underline">STUDENT INFORMATION FORM</h2>
+                                <h2 className="fs-2 fw-bold underline title">STUDENT INFORMATION FORM</h2>
                             </div>
                         </div>
 

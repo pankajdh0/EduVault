@@ -2,8 +2,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Darumadrop+One&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Righteous&display=swap');
 
 /* Apply Ubuntu font to the whole page */
-body, input, textarea, select, button {
+body, input, div, textarea, select, button {
   font-family: 'PT Serif', sans-serif;
+}
+
+.title{
+  font-family: 'PT Serif', sans-serif;
+  letter-spacing: 0.1em;
+  color: rgb(238 238 238);
+  padding-bottom: 24px;
+  margin-bottom: 6px;
 }
 
 /* Style for the app container */
@@ -11,9 +19,9 @@ body, input, textarea, select, button {
   height: 100%;
 }
 
-.underline {
+/* .underline {
   text-decoration: underline;
-}
+} */
 
 .image-upload-container {
   padding: 2rem;
