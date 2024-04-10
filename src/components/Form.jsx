@@ -3,6 +3,8 @@ import axios from "axios";
 import { handleChange, handleSubmit } from "./formUtils";
 import logo from "../assets/Spit.png";
 import "../components/styles.css";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 function StudentInformation() {
     const [sem, setSem] = useState("");
@@ -133,14 +135,19 @@ function StudentInformation() {
             date4, award4, collegeStateNationalInternational4,
             anyOther, signature
         };
-
+        
         try {
             await handleSubmit(formData, resetFormState);
+            console.log("Form submitted successfully");
+            generatePDF(); 
+            setTimeout(() => {
+                window.location.reload(); 
+            }, 1500);
         } catch (error) {
             console.error("Error submitting student data:", error);
         }
     };
-
+ 
     const resetFormState = () => {
         setSem(""); setClass(""); setUid("");
         setStudentName(""); setPhoneNo(""); setBranch("");
@@ -164,10 +171,44 @@ function StudentInformation() {
         setDate4(""); setAward4(""); setCollegeStateNationalInternational4("");
         setAnyOther(""); setSignature("");
     };
+    const generatePDF = () => {
+        const input = document.getElementById('pdf-content');
+      
+        const totalPages = 2; // Specify the number of pages
+      
+        // Remove the submit button from the form before capturing content
+        const submitButton = input.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.remove();
+        }
+      
+        html2canvas(input, {
+          scale: 1, // Adjust scale if needed
+          windowWidth: document.documentElement.scrollWidth,
+          windowHeight: document.documentElement.scrollHeight
+        }).then((canvas) => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('p', 'pt', 'a4', true); // Specify portrait mode and A4 paper size with auto page break
+          const imgWidth = pdf.internal.pageSize.getWidth();
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+          // Add the first page
+          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      
+          // Add additional pages if needed
+          for (let i = 1; i < totalPages; i++) {
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, -pdf.internal.pageSize.getHeight() * i, imgWidth, imgHeight);
+          }
+      
+          pdf.save("student_information.pdf");
+        });
+      };
+
 
     return (
         <>
-            <div className="container-fluid" style={{ height: "100%", backgroundImage: 'url(https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp)', backgroundSize: 'inherit' }}>
+            <div id="pdf-content" className="container-fluid" style={{ height: "100%", backgroundImage: 'url(https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp)', backgroundSize: 'inherit' }}>
                 <div className="row justify-content-center align-items-center h-100">
                     <div className="col-md-8" style={{ boxShadow: "white 0px 1px 70px", margin: "20px" }}>
 
