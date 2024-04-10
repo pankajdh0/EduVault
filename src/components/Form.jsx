@@ -11,6 +11,8 @@ function StudentInformation() {
     const [classValue, setClass] = useState("");
     const [uid, setUid] = useState("");
     const [studentName, setStudentName] = useState("");
+    const [photo, setPhoto] = useState(null);
+    const [photoError, setPhotoError] = useState('');
     const [phoneNo, setPhoneNo] = useState("");
     const [branch, setBranch] = useState("");
     const [dob, setDob] = useState("");
@@ -108,10 +110,17 @@ function StudentInformation() {
     const [award4, setAward4] = useState("");
     const [collegeStateNationalInternational4, setCollegeStateNationalInternational4] = useState("");
     const [anyOther, setAnyOther] = useState("");
-    const [signature, setSignature] = useState("");
+    const [signature, setSignature] = useState(null);
+    const [signatureError, setSignatureError] = useState('');
+
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+        if (photo && photo.size > 500 * 1024) {
+            setPhoto(null);
+            setPhotoError('Please upload a photo below 500kb.');
+            return;
+        }
         const formData = {
             sem, class: classValue,
             uid, studentName, phoneNo,
@@ -135,19 +144,19 @@ function StudentInformation() {
             date4, award4, collegeStateNationalInternational4,
             anyOther, signature
         };
-        
+
         try {
             await handleSubmit(formData, resetFormState);
             console.log("Form submitted successfully");
-            generatePDF(); 
+            generatePDF();
             setTimeout(() => {
-                window.location.reload(); 
+                window.location.reload();
             }, 1500);
         } catch (error) {
             console.error("Error submitting student data:", error);
         }
     };
- 
+
     const resetFormState = () => {
         setSem(""); setClass(""); setUid("");
         setStudentName(""); setPhoneNo(""); setBranch("");
@@ -171,39 +180,40 @@ function StudentInformation() {
         setDate4(""); setAward4(""); setCollegeStateNationalInternational4("");
         setAnyOther(""); setSignature("");
     };
+
     const generatePDF = () => {
         const input = document.getElementById('pdf-content');
-      
+
         const totalPages = 2; // Specify the number of pages
-      
+
         // Remove the submit button from the form before capturing content
         const submitButton = input.querySelector('button[type="submit"]');
         if (submitButton) {
-          submitButton.remove();
+            submitButton.remove();
         }
-      
+
         html2canvas(input, {
-          scale: 1, // Adjust scale if needed
-          windowWidth: document.documentElement.scrollWidth,
-          windowHeight: document.documentElement.scrollHeight
+            scale: 1, // Adjust scale if needed
+            windowWidth: document.documentElement.scrollWidth,
+            windowHeight: document.documentElement.scrollHeight
         }).then((canvas) => {
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF('p', 'pt', 'a4', true); // Specify portrait mode and A4 paper size with auto page break
-          const imgWidth = pdf.internal.pageSize.getWidth();
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-          // Add the first page
-          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      
-          // Add additional pages if needed
-          for (let i = 1; i < totalPages; i++) {
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, -pdf.internal.pageSize.getHeight() * i, imgWidth, imgHeight);
-          }
-      
-          pdf.save("student_information.pdf");
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'pt', 'a4', true); // Specify portrait mode and A4 paper size with auto page break
+            const imgWidth = pdf.internal.pageSize.getWidth();
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            // Add the first page
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+            // Add additional pages if needed
+            for (let i = 1; i < totalPages; i++) {
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, -pdf.internal.pageSize.getHeight() * i, imgWidth, imgHeight);
+            }
+
+            pdf.save("student_information.pdf");
         });
-      };
+    };
 
 
     return (
@@ -227,10 +237,78 @@ function StudentInformation() {
                         <form onSubmit={handleFormSubmit} className="custom-form" style={{ margin: "7px" }}>
                             <div className=" mt-4 row mb-3 bg-light" >
                                 <div className="row mb-3 justify-content-center">
+
+                                    <div className="container">
+                                        <div className="row mb-3">
+                                            <div className="col-md-12">
+                                                <label className="col-form-label text-end">Name of the Student:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="studentName"
+                                                    value={studentName}
+                                                    onChange={(e) => handleChange(e, setStudentName)}
+                                                    style={{ width: '700px' }} // Set width to 700px as before
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="row mb-3">
+                                            <div className="col-md-12">
+                                                <label className="col-form-label text-end">Photograph:</label>
+                                                <div className="d-flex align-items-center">
+                                                    <input
+                                                        type="file"
+                                                        className="form-control"
+                                                        name="photo"
+                                                        onChange={(e) => {
+                                                            const selectedFile = e.target.files[0];
+                                                            if (selectedFile && selectedFile.size <= 500 * 1024) {
+                                                                setPhoto(selectedFile);
+                                                                setPhotoError('');
+                                                            } else {
+                                                                setPhoto(null);
+                                                                setPhotoError('Please upload a photo below 500kb.');
+                                                            }
+                                                        }}
+                                                        accept=".pdf,.jpg,.jpeg"
+                                                        style={{ width: '700px' }}
+                                                    />
+                                                    {photo ? (
+                                                        <img
+                                                            src={URL.createObjectURL(photo)}
+                                                            alt="Uploaded"
+                                                            style={{ width: '200px', height: '200px', marginLeft: '20px' }}
+                                                        />
+                                                    ) : (
+                                                        <div
+                                                            style={{
+                                                                width: '200px',
+                                                                height: '200px',
+                                                                backgroundColor: '#ddd',
+                                                                display: 'flex',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center',
+                                                                marginLeft: '60px',
+                                                                border: '2px solid black',
+                                                            }}
+                                                        >
+                                                            Photograph
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {photoError && (
+                                                    <div className="text-danger mt-2" style={{ fontSize: '18px' }}>{photoError}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div className="col-md-4">
                                         <label className="col-form-label text-end">SEM:</label>
                                         <input type="text" className="form-control" name="sem" value={sem} onChange={(e) => handleChange(e, setSem)} />
                                     </div>
+
 
                                     <div className="col-md-4">
                                         <label className="col-form-label text-end">CLASS:</label>
@@ -243,12 +321,6 @@ function StudentInformation() {
                                     </div>
                                 </div>
 
-                                <div className="row mb-3">
-                                    <div className="col-md-12">
-                                        <label className="col-form-label text-end">Name of the Student:</label>
-                                        <input type="text" className="form-control" name="studentName" value={studentName} onChange={(e) => handleChange(e, setStudentName)} />
-                                    </div>
-                                </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-12">
@@ -257,12 +329,6 @@ function StudentInformation() {
                                     </div>
                                 </div>
 
-                                <div className="row mb-3">
-                                    <div className="col-md-12">
-                                        <label className="col-form-label text-end">Photograph:</label>
-                                        <input type="file" className="form-control" accept=".pdf,.jpg,.jpeg" />
-                                    </div>
-                                </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-6">
@@ -734,9 +800,56 @@ function StudentInformation() {
                                         <label className="col-form-label text-end">Any other:</label>
                                         <input type="text" className=" form-control" name="anyOther" value={anyOther} onChange={(e) => handleChange(e, setAnyOther)} />
 
-                                        <label className="col-form-label text-end mt-2">Signature of student</label>
-                                        <input type="file" className=" form-control" accept=".pdf,.jpg,.jpeg" name="signature" value={signature} onChange={(e) => handleChange(e, setSignature)} />
-                                        <br />
+                                        <div className="row mb-3">
+                                            <div className="col-md-12">
+                                                <label className="col-form-label text-end">Signature of student:</label>
+                                                <div className="d-flex align-items-center">
+                                                    <input
+                                                        type="file"
+                                                        className="form-control"
+                                                        name="signature"
+                                                        onChange={(e) => {
+                                                            const selectedFile = e.target.files[0];
+                                                            if (selectedFile && selectedFile.size <= 500 * 1024) {
+                                                                setSignature(selectedFile);
+                                                                setSignatureError('');
+                                                            } else {
+                                                                setSignature(null);
+                                                                setSignatureError('Please upload a signature photo below 500kb.');
+                                                            }
+                                                        }}
+                                                        accept=".pdf,.jpg,.jpeg"
+                                                        style={{ width: '700px' }}
+                                                    />
+                                                    {signature ? (
+                                                        <img
+                                                            src={URL.createObjectURL(signature)}
+                                                            alt="Uploaded"
+                                                            style={{ width: '150px', height: '80px', marginLeft: '20px' }}
+                                                        />
+                                                    ) : (
+                                                        <div
+                                                            style={{
+                                                                width: '150px',
+                                                                height: '80px',
+                                                                backgroundColor: '#ddd',
+                                                                display: 'flex',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center',
+                                                                marginLeft: '60px',
+                                                                border: '2px solid black',
+                                                            }}
+                                                        >
+                                                            Signature
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {signatureError && (
+                                                    <div className="text-danger mt-2" style={{ fontSize: '18px' }}>{signatureError}</div>
+                                                )}
+                                            </div>
+                                        </div>
+
 
                                     </div>
                                 </div>
@@ -745,8 +858,8 @@ function StudentInformation() {
                             </div>
                         </form>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     );
 }
