@@ -15,10 +15,12 @@ export const handleChange = (e, stateSetter) => {
     ) {
         // Accepts decimal or float numbers
         isValid = /^\d*\.?\d*$/.test(value);
-    } else if (name === "uid") {
-        isValid = /^\d{0,15}$/.test(value); // Accepts up to 15 digits
+    } else if (name === "uid" || name === "phoneNo") {
+        isValid = /^\d{0,10}$/.test(value); // Accepts up to 15 digits
     } else if (name === "studentName") {
-        isValid = /^[a-zA-Z ]{0,12}$/.test(value); // Accepts up to 12 characters including alphabets and spaces
+        isValid = /^[a-zA-Z ]{0,20}$/.test(value); // Accepts up to 12 characters including alphabets and spaces
+    } else if (name === "tempAddress" || name === "permAddress"){
+        isValid = /^[a-zA-Z ]{0,50}$/.test(value);    
     }
 
     // Update state only if the value is valid or empty
