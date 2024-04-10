@@ -113,6 +113,7 @@ function StudentInformation() {
     const [signature, setSignature] = useState(null);
     const [signatureError, setSignatureError] = useState('');
 
+// <<<<<<< frontend-arti
     // State variables for validation errors
     const [semError, setSemError] = useState("");
     const [classError, setClassError] = useState("");
@@ -142,6 +143,7 @@ function StudentInformation() {
             setPhotoError('Please upload a photo below 500kb.');
             return;
         }
+
 
         // Validate each field individually
         const semError = validateField(sem, "SEM");
@@ -194,7 +196,6 @@ function StudentInformation() {
             return;
         }
         
-
         const formData = {
             sem, class: classValue,
             uid, studentName, phoneNo,
@@ -253,6 +254,7 @@ function StudentInformation() {
         setDate3(""); setAward3(""); setCollegeStateNationalInternational3("");
         setDate4(""); setAward4(""); setCollegeStateNationalInternational4("");
         setAnyOther(""); setSignature("");
+
 
     };
 
@@ -355,6 +357,44 @@ function StudentInformation() {
     };
 
 
+    };
+
+    const generatePDF = () => {
+        const input = document.getElementById('pdf-content');
+
+        const totalPages = 2; // Specify the number of pages
+
+        // Remove the submit button from the form before capturing content
+        const submitButton = input.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.remove();
+        }
+
+        html2canvas(input, {
+            scale: 1, // Adjust scale if needed
+            windowWidth: document.documentElement.scrollWidth,
+            windowHeight: document.documentElement.scrollHeight
+        }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'pt', 'a4', true); // Specify portrait mode and A4 paper size with auto page break
+            const imgWidth = pdf.internal.pageSize.getWidth();
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            // Add the first page
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+            // Add additional pages if needed
+            for (let i = 1; i < totalPages; i++) {
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, -pdf.internal.pageSize.getHeight() * i, imgWidth, imgHeight);
+            }
+
+            pdf.save("student_information.pdf");
+        });
+    };
+
+
+
     return (
         <>
             <div id="pdf-content" className="container-fluid" style={{ height: "100%", backgroundImage: 'url(https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp)', backgroundSize: 'inherit' }}>
@@ -386,6 +426,7 @@ function StudentInformation() {
                                                     className="form-control"
                                                     name="studentName"
                                                     value={studentName}
+
                                                     onChange={(e) =>{ handleChange(e, setStudentName); clearError('studentName');}}
                                                     style={{ width: '700px' }} // Set width to 700px as before
                                                 />
@@ -470,6 +511,7 @@ function StudentInformation() {
                                         <label className="col-form-label text-end">Phone No:</label>
                                         <input type="text" className="form-control" name="phoneNo" value={phoneNo} onChange={(e) => {handleChange(e, setPhoneNo); clearError('phoneNo');}} />
                                         {phoneNoError && <div className="text-danger">{phoneNoError}</div>}
+
 
                                     </div>
                                 </div>
@@ -898,6 +940,7 @@ function StudentInformation() {
                                 <div className="row mb-3">
                                     <div className=" col-md-12">
                                         <label className="col-form-label text-end">Area of interest:</label>
+
                                         <input type="text" className=" form-control" name="AreaOfInterest" value={AreaOfInterest} onChange={(e) =>{ handleChange(e, setAreaOfInterest); clearError('AreaOfInterest');}} />
                                         {AreaOfInterestError && <div className="text-danger">{AreaOfInterestError}</div>}
 
@@ -905,6 +948,7 @@ function StudentInformation() {
                                         <label className="col-form-label text-end">Goals/Future Plans (After BE):</label>
                                         <input type="text" className="form-control" name="goalsFuturePlans" value={goalsFuturePlans} onChange={(e) => {handleChange(e, setGoalsFuturePlans); clearError('goalsFuturePlans');}} />
                                         {goalsFuturePlansError && <div className="text-danger">{goalsFuturePlansError}</div>}
+
 
                                     </div>
                                 </div>
@@ -928,6 +972,7 @@ function StudentInformation() {
                                                 <tr>
                                                     <td>
                                                         <input type="date" name="date1" className=" col-md-11" value={date1} onChange={(e) => handleChange(e, setDate1)} />
+
                                                     </td>
                                                     <td>
                                                         <input type="text" name="award1" className=" col-md-11" value={award1} onChange={(e) => handleChange(e, setAward1)} />
@@ -939,6 +984,7 @@ function StudentInformation() {
                                                 <tr>
                                                     <td>
                                                         <input type="date" name="date2" className=" col-md-11" value={date2} onChange={(e) => handleChange(e, setDate2)} />
+
                                                     </td>
                                                     <td>
                                                         <input type="text" name="award2" className=" col-md-11" value={award2} onChange={(e) => handleChange(e, setAward2)} />
@@ -949,6 +995,7 @@ function StudentInformation() {
                                                 </tr><tr>
                                                     <td>
                                                         <input type="date" name="date3" className=" col-md-11" value={date3} onChange={(e) => handleChange(e, setDate3)} />
+
                                                     </td>
                                                     <td>
                                                         <input type="text" name="award3" className=" col-md-11" value={award3} onChange={(e) => handleChange(e, setAward3)} />
@@ -958,7 +1005,9 @@ function StudentInformation() {
                                                     </td>
                                                 </tr><tr>
                                                     <td>
+
                                                         <input type="date" name="date4" className=" col-md-11" value={date4} onChange={(e) => handleChange(e, setDate4)} />
+
                                                     </td>
                                                     <td>
                                                         <input type="text" name="award4" className=" col-md-11" value={award4} onChange={(e) => handleChange(e, setAward4)} />
@@ -975,6 +1024,7 @@ function StudentInformation() {
                                 <div className="row mb-3 ">
                                     <div className=" col-md-12">
                                         <label className="col-form-label text-end">Any other:</label>
+
                                         <input type="text" className=" form-control" name="anyOther" value={anyOther} onChange={(e) => {handleChange(e, setAnyOther); clearError('anyOther');}} />
                                         {anyOtherError && <div className="text-danger">{anyOtherError}</div>}
 
@@ -1028,8 +1078,6 @@ function StudentInformation() {
                                                 )}
                                             </div>
                                         </div>
-
-
                                     </div>
                                 </div>
 
