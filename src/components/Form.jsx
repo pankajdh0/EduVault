@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { handleChange, handleSubmit } from "./formUtils";
 import logo from "../assets/Spit.png";
-import "../components/styles.css";
+import "../Components/styles.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -113,15 +113,73 @@ function StudentInformation() {
     const [signature, setSignature] = useState(null);
     const [signatureError, setSignatureError] = useState('');
 
+    const [semError, setSemError] = useState("");
+    const [classError, setClassError] = useState("");
+    const [uidError, setUidError] = useState("");
+    const [studentNameError, setStudentNameError] = useState("");
+    const [phoneNoError, setPhoneNoError] = useState("");
+    const [branchError, setBranchError] = useState("");
+    const [dobError, setDobError] = useState("");
+    const [bloodGroupError, setBloodGroupError] = useState("");
+    const [tempAddressError, setTempAddressError] = useState("");
+    const [permAddressError, setPermAddressError] = useState("");
+    const [fatherOccupationError, setFatherOccupationError] = useState("");
+    const [motherOccupationError, setMotherOccupationError] = useState("");
+    const [hobbiesError, setHobbiesError] = useState("");
+    const [strengthAndWeaknessesError, setStrengthAndWeaknessesError] = useState("");
+    const [AreaOfInterestError, setAreaOfInterestError] = useState("");
+    const [goalsFuturePlansError, setGoalsFuturePlansError] = useState("");
+    const [anyOtherError, setAnyOtherError] = useState("");
+
+
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        if (photo && photo.size > 500 * 1024) {
-            setPhoto(null);
-            setPhotoError('Please upload a photo below 500kb.');
-            return;
-        }
-        const formData = {
+
+        // Validate each field individually
+        const semError = validateField(sem, "SEM");
+        const classError = validateField(classValue, "Class");
+        const uidError = validateField(uid, "UID");
+        const studentNameError =validateField(studentName, "Student Name");
+        const phoneNoError =validateField(phoneNo, "Phone No");
+        const branchError =validateField(branch, "Branch");
+        const dobError =validateField(dob, "DOB");
+        const bloodGroupError =validateField(bloodGroup, "Blood Group");
+        const tempAddressError =validateField(tempAddress, "Temperary Address");
+        const permAddressError =validateField(permAddress, "Permanent Address");
+        const fatherOccupationError =validateField(fatherOccupation, "Fathers Occupation");
+        const motherOccupationError =validateField(motherOccupation, "Mothers Occupation");
+        const hobbiesError =validateField(hobbies, "Hobbies");
+        const strengthAndWeaknessesError =validateField(strengthAndWeaknesses, "Strength And Weaknesses");
+        const AreaOfInterestError =validateField(AreaOfInterest, "Area Of Interest");
+        const goalsFuturePlansError =validateField(goalsFuturePlans, "Goals/Future Plans");
+        const anyOtherError =validateField(anyOther, "Any Other");
+
+        // Update error state
+        // setSemError(semError);
+        // setClassError(classError);
+        // setUidError(uidError);
+        // setStudentNameError(studentNameError);
+        // setPhoneNoError(phoneNoError);
+        // setBranchError(branchError);
+        // setDobError(dobError);
+        // setBloodGroupError(bloodGroupError);
+        // setTempAddressError(tempAddressError);
+        // setPermAddressError(permAddressError);
+        // setFatherOccupationError(fatherOccupationError);
+        // setMotherOccupationError(motherOccupationError);
+        // setHobbiesError(hobbiesError);
+        // setStrengthAndWeaknessesError(strengthAndWeaknessesError);
+        // setAreaOfInterestError(AreaOfInterestError);
+        // setGoalsFuturePlansError(goalsFuturePlansError);
+        // setAnyOtherError(anyOtherError);
+        
+        //  // If there are any errors, stop form submission
+        //  if (semError || classError || uidError || studentName || phoneNo || branchError || dobError || bloodGroupError || tempAddressError || permAddressError || fatherOccupationError || motherOccupationError || hobbiesError || strengthAndWeaknessesError || AreaOfInterestError || goalsFuturePlansError || anyOtherError/* || other errors */) {
+        //     return;
+        // }
+        
+        let formData = {
             sem, class: classValue,
             uid, studentName, phoneNo,
             branch, dob, bloodGroup,
@@ -142,16 +200,21 @@ function StudentInformation() {
             date2, award2, collegeStateNationalInternational2,
             date3, award3, collegeStateNationalInternational3,
             date4, award4, collegeStateNationalInternational4,
-            anyOther, signature
+            anyOther,
         };
+
+        if (photo?.size <= 500 * 1024 && signature?.size <= 500 * 1024) {
+            formData = {...formData, photo, signature}
+        }
+    
 
         try {
             await handleSubmit(formData, resetFormState);
             console.log("Form submitted successfully");
             generatePDF();
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+            // setTimeout(() => {
+            //     window.location.reload();
+            // }, 1500);
         } catch (error) {
             console.error("Error submitting student data:", error);
         }
@@ -179,12 +242,78 @@ function StudentInformation() {
         setDate3(""); setAward3(""); setCollegeStateNationalInternational3("");
         setDate4(""); setAward4(""); setCollegeStateNationalInternational4("");
         setAnyOther(""); setSignature("");
+
+
+    };
+
+    const clearError = (fieldName) => {
+        switch (fieldName) {
+            case 'sem':
+                setSemError("");
+                break;
+            case 'classValue':
+                setClassError("");
+                break;
+            case 'uid':
+                setUidError("");
+                break;
+            case 'studentName':
+                    setStudentNameError("");
+                    break;
+            case 'phoneNo':
+                    setPhoneNoError("");
+                    break;
+            case 'branch':
+                    setBranchError("");
+                    break;
+            case 'dob':
+                    setDobError("");
+                    break;
+            case 'bloodGroup':
+                    setBloodGroupError("");
+                    break;
+            case 'tempAddress':
+                    setTempAddressError("");
+                    break;
+            case 'permAddress':
+                    setPermAddressError("");
+                    break;
+            case 'fatherOccupation':
+                    setFatherOccupationError("");
+                    break;
+            case 'motherOccupation':
+                    setMotherOccupationError("");
+                    break;
+            case 'hobbies':
+                    setHobbiesError("");
+                    break;
+            case 'strengthAndWeaknesses':
+                    setStrengthAndWeaknessesError("");
+                    break;  
+            case 'AreaOfInterest':
+                    setAreaOfInterestError("");
+                    break;  
+            case 'goalsFuturePlans':
+                    setGoalsFuturePlansError("");
+                    break;     
+            case 'anyOther':
+                    setAnyOtherError("");
+                    break;                           
+            default:
+                break;
+        }
+    };
+    const validateField = (value, fieldName) => {
+        if (!value) {
+            return `${fieldName} is required.`;
+        }
+        return "";
     };
 
     const generatePDF = () => {
         const input = document.getElementById('pdf-content');
 
-        const totalPages = 2; // Specify the number of pages
+        const totalPages = 3; // Specify the number of pages
 
         // Remove the submit button from the form before capturing content
         const submitButton = input.querySelector('button[type="submit"]');
@@ -250,7 +379,7 @@ function StudentInformation() {
                                                     onChange={(e) => handleChange(e, setStudentName)}
                                                     style={{ width: '700px' }} // Set width to 700px as before
                                                 />
-                                            </div>
+                                          </div>
                                         </div>
 
                                         <div className="row mb-3">
@@ -281,18 +410,7 @@ function StudentInformation() {
                                                             style={{ width: '200px', height: '200px', marginLeft: '20px' }}
                                                         />
                                                     ) : (
-                                                        <div
-                                                            style={{
-                                                                width: '200px',
-                                                                height: '200px',
-                                                                backgroundColor: '#ddd',
-                                                                display: 'flex',
-                                                                justifyContent: 'center',
-                                                                alignItems: 'center',
-                                                                marginLeft: '60px',
-                                                                border: '2px solid black',
-                                                            }}
-                                                        >
+                                                        <div className="photograph">
                                                             Photograph
                                                         </div>
                                                     )}
@@ -306,18 +424,21 @@ function StudentInformation() {
 
                                     <div className="col-md-4">
                                         <label className="col-form-label text-end">SEM:</label>
-                                        <input type="text" className="form-control" name="sem" value={sem} onChange={(e) => handleChange(e, setSem)} />
-                                    </div>
+                                        <input type="text" className="form-control" name="sem" value={sem} onChange={(e) => {handleChange(e, setSem); clearError('sem');} } />
+                                        {semError && <div className="text-danger">{semError}</div>}
+                                        </div>
 
 
                                     <div className="col-md-4">
                                         <label className="col-form-label text-end">CLASS:</label>
-                                        <input type="text" className="form-control" name="class" value={classValue} onChange={(e) => handleChange(e, setClass)} />
+                                        <input type="text" className="form-control" name="class" value={classValue} onChange={(e) => {handleChange(e, setClass); clearError('classValue');}} />
+                                        {classError && <div className="text-danger">{classError}</div>}
                                     </div>
 
                                     <div className="col-md-4">
                                         <label className="col-form-label text-end">UID NO:</label>
-                                        <input type="text" className="form-control" name="uid" value={uid} onChange={(e) => handleChange(e, setUid)} />
+                                        <input type="text" className="form-control" name="uid" value={uid} onChange={(e) => {handleChange(e, setUid); clearError('uid');}} />
+                                        {uidError && <div className="text-danger">{uidError}</div>}
                                     </div>
                                 </div>
 
@@ -325,7 +446,10 @@ function StudentInformation() {
                                 <div className="row mb-3">
                                     <div className="col-md-12">
                                         <label className="col-form-label text-end">Phone No:</label>
-                                        <input type="text" className="form-control" name="phoneNo" value={phoneNo} onChange={(e) => handleChange(e, setPhoneNo)} />
+                                        <input type="text" className="form-control" name="phoneNo" value={phoneNo} onChange={(e) => {handleChange(e, setPhoneNo); clearError('phoneNo');}} />
+                                        {phoneNoError && <div className="text-danger">{phoneNoError}</div>}
+
+
                                     </div>
                                 </div>
 
@@ -333,60 +457,88 @@ function StudentInformation() {
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label className="col-form-label text-end ">Date of Birth:</label>
-                                        <input type="text" className="form-control" name="dob" value={dob} onChange={(e) => handleChange(e, setDob)} />
+                                        <input type="date" className="form-control" name="dob" value={dob} onChange={(e) => {handleChange(e, setDob); clearError('dob');}} />
+                                        {dobError && <div className="text-danger">{dobError}</div>}
+
                                     </div>
                                     <div className="col-md-6">
-                                        <label className="col-form-label text-end">Blood Group:</label>
-                                        <input type="text" className="form-control" name="bloodGroup" value={bloodGroup} onChange={(e) => handleChange(e, setBloodGroup)} />
-                                    </div>
+    <label className="col-form-label text-end">Blood Group:</label>
+    <select className="form-control" name="bloodGroup" value={bloodGroup} onChange={(e) => { handleChange(e, setBloodGroup); clearError('bloodGroup'); }}>
+        <option value="">Select Blood Group</option>
+        <option value="A+">A+</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B-">B-</option>
+        <option value="AB+">AB+</option>
+        <option value="AB-">AB-</option>
+        <option value="O+">O+</option>
+        <option value="O-">O-</option>
+    </select>
+    {bloodGroupError && <div className="text-danger">{bloodGroupError}</div>}
+</div>
+
                                 </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-12">
                                         <label className="col-form-label text-end">Branch:</label>
-                                        <input type="text" className="form-control" name="branch" value={branch} onChange={(e) => handleChange(e, setBranch)} />
+                                        <input type="text" className="form-control" name="branch" value={branch} onChange={(e) => {handleChange(e, setBranch); clearError('branch');}} />
+                                        {branchError && <div className="text-danger">{branchError}</div>}
+
                                     </div>
                                 </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-12">
                                         <label className="col-form-label text-end">Temporary Address:</label>
-                                        <input type="text" className="form-control" name="tempAddress" value={tempAddress} onChange={(e) => handleChange(e, setTempAddress)} />
+                                        <input type="text" className="form-control" name="tempAddress" value={tempAddress} onChange={(e) => {handleChange(e, setTempAddress); clearError('tempAddress');}} />
+                                        {tempAddressError && <div className="text-danger">{tempAddressError}</div>}
+
                                     </div>
                                 </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-12">
                                         <label className="col-form-label text-end">Permanent Address:</label>
-                                        <input type="text" className="form-control" name="permAddress" value={permAddress} onChange={(e) => handleChange(e, setPermAddress)} />
+                                        <input type="text" className="form-control" name="permAddress" value={permAddress} onChange={(e) => {handleChange(e, setPermAddress); clearError('permAddress');}} />
+                                        {permAddressError && <div className="text-danger">{permAddressError}</div>}
+
                                     </div>
                                 </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-12">
                                         <label className="col-form-label text-end">Father's Occupation:</label>
-                                        <input type="text" className="form-control" name="fatherOccupation" value={fatherOccupation} onChange={(e) => handleChange(e, setFatherOccupation)} />
+                                        <input type="text" className="form-control" name="fatherOccupation" value={fatherOccupation} onChange={(e) => {handleChange(e, setFatherOccupation); clearError('fatherOccupation');}} />
+                                        {fatherOccupationError && <div className="text-danger">{fatherOccupationError}</div>}
+
                                     </div>
                                 </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-12">
                                         <label className="col-form-label text-end">Mother's Occupation:</label>
-                                        <input type="text" className="form-control" name="motherOccupation" value={motherOccupation} onChange={(e) => handleChange(e, setMotherOccupation)} />
+                                        <input type="text" className="form-control" name="motherOccupation" value={motherOccupation} onChange={(e) => {handleChange(e, setMotherOccupation); clearError('motherOccupation');}} />
+                                        {motherOccupationError && <div className="text-danger">{motherOccupationError}</div>}
+
                                     </div>
                                 </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-12">
                                         <label className="col-form-label text-end">Hobbies:</label>
-                                        <input type="text" className="form-control" name="hobbies" value={hobbies} onChange={(e) => handleChange(e, setHobbies)} />
+                                        <input type="text" className="form-control" name="hobbies" value={hobbies} onChange={(e) => {handleChange(e, setHobbies); clearError('hobbies');}} />
+                                        {hobbiesError && <div className="text-danger">{hobbiesError}</div>}
+
                                     </div>
                                 </div>
 
                                 <div className="row mb-3">
                                     <div className="col-md-12">
                                         <label className="col-form-label text-end">Strength and Weaknesses:</label>
-                                        <input type="text" className="form-control" name="strengthAndWeaknesses" value={strengthAndWeaknesses} onChange={(e) => handleChange(e, setStrengthAndWeaknesses)} />
+                                        <input type="text" className="form-control" name="strengthAndWeaknesses" value={strengthAndWeaknesses} onChange={(e) =>{ handleChange(e, setStrengthAndWeaknesses); clearError('strengthAndWeaknesses');}} />
+                                        {strengthAndWeaknessesError && <div className="text-danger">{strengthAndWeaknessesError}</div>}
+
                                     </div>
                                 </div>
 
@@ -725,10 +877,16 @@ function StudentInformation() {
                                 <div className="row mb-3">
                                     <div className=" col-md-12">
                                         <label className="col-form-label text-end">Area of interest:</label>
-                                        <input type="text" className=" form-control" name="AreaOfInterest" value={AreaOfInterest} onChange={(e) => handleChange(e, setAreaOfInterest)} />
+
+                                        <input type="text" className=" form-control" name="AreaOfInterest" value={AreaOfInterest} onChange={(e) =>{ handleChange(e, setAreaOfInterest); clearError('AreaOfInterest');}} />
+                                        {AreaOfInterestError && <div className="text-danger">{AreaOfInterestError}</div>}
+
 
                                         <label className="col-form-label text-end">Goals/Future Plans (After BE):</label>
-                                        <input type="text" className="form-control" name="goalsFuturePlans" value={goalsFuturePlans} onChange={(e) => handleChange(e, setGoalsFuturePlans)} />
+                                        <input type="text" className="form-control" name="goalsFuturePlans" value={goalsFuturePlans} onChange={(e) => {handleChange(e, setGoalsFuturePlans); clearError('goalsFuturePlans');}} />
+                                        {goalsFuturePlansError && <div className="text-danger">{goalsFuturePlansError}</div>}
+
+
                                     </div>
                                 </div>
 
@@ -750,7 +908,8 @@ function StudentInformation() {
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <input type="text" name="date1" className=" col-md-11" value={date1} onChange={(e) => handleChange(e, setDate1)} />
+                                                        <input type="date" name="date1" className=" col-md-11" value={date1} onChange={(e) => handleChange(e, setDate1)} />
+
                                                     </td>
                                                     <td>
                                                         <input type="text" name="award1" className=" col-md-11" value={award1} onChange={(e) => handleChange(e, setAward1)} />
@@ -761,7 +920,8 @@ function StudentInformation() {
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input type="text" name="date2" className=" col-md-11" value={date2} onChange={(e) => handleChange(e, setDate2)} />
+                                                        <input type="date" name="date2" className=" col-md-11" value={date2} onChange={(e) => handleChange(e, setDate2)} />
+
                                                     </td>
                                                     <td>
                                                         <input type="text" name="award2" className=" col-md-11" value={award2} onChange={(e) => handleChange(e, setAward2)} />
@@ -771,7 +931,8 @@ function StudentInformation() {
                                                     </td>
                                                 </tr><tr>
                                                     <td>
-                                                        <input type="text" name="date3" className=" col-md-11" value={date3} onChange={(e) => handleChange(e, setDate3)} />
+                                                        <input type="date" name="date3" className=" col-md-11" value={date3} onChange={(e) => handleChange(e, setDate3)} />
+
                                                     </td>
                                                     <td>
                                                         <input type="text" name="award3" className=" col-md-11" value={award3} onChange={(e) => handleChange(e, setAward3)} />
@@ -781,7 +942,9 @@ function StudentInformation() {
                                                     </td>
                                                 </tr><tr>
                                                     <td>
-                                                        <input type="text" name="date4" className=" col-md-11" value={date4} onChange={(e) => handleChange(e, setDate4)} />
+
+                                                        <input type="date" name="date4" className=" col-md-11" value={date4} onChange={(e) => handleChange(e, setDate4)} />
+
                                                     </td>
                                                     <td>
                                                         <input type="text" name="award4" className=" col-md-11" value={award4} onChange={(e) => handleChange(e, setAward4)} />
@@ -798,7 +961,10 @@ function StudentInformation() {
                                 <div className="row mb-3 ">
                                     <div className=" col-md-12">
                                         <label className="col-form-label text-end">Any other:</label>
-                                        <input type="text" className=" form-control" name="anyOther" value={anyOther} onChange={(e) => handleChange(e, setAnyOther)} />
+
+                                        <input type="text" className=" form-control" name="anyOther" value={anyOther} onChange={(e) => {handleChange(e, setAnyOther); clearError('anyOther');}} />
+                                        {anyOtherError && <div className="text-danger">{anyOtherError}</div>}
+
 
                                         <div className="row mb-3">
                                             <div className="col-md-12">
@@ -819,7 +985,7 @@ function StudentInformation() {
                                                             }
                                                         }}
                                                         accept=".pdf,.jpg,.jpeg"
-                                                        style={{ width: '700px' }}
+                                                        style={{ width: '700px' }} 
                                                     />
                                                     {signature ? (
                                                         <img
@@ -828,18 +994,7 @@ function StudentInformation() {
                                                             style={{ width: '150px', height: '80px', marginLeft: '20px' }}
                                                         />
                                                     ) : (
-                                                        <div
-                                                            style={{
-                                                                width: '150px',
-                                                                height: '80px',
-                                                                backgroundColor: '#ddd',
-                                                                display: 'flex',
-                                                                justifyContent: 'center',
-                                                                alignItems: 'center',
-                                                                marginLeft: '60px',
-                                                                border: '2px solid black',
-                                                            }}
-                                                        >
+                                                        <div className="sign">
                                                             Signature
                                                         </div>
                                                     )}
@@ -849,8 +1004,6 @@ function StudentInformation() {
                                                 )}
                                             </div>
                                         </div>
-
-
                                     </div>
                                 </div>
 

@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const studentController = require('../controllers/studentController.cjs');
+const multer = require('multer');
 
-router.post('/', studentController.createStudent);
+// Multer middleware for handling multipart/form-data (uploading files)
+const upload = multer();
+
+router.post('/', upload.fields([{ name: 'photo' }, { name: 'signature' }]), studentController.createStudent);
 
 // Get all students
 router.get('/', studentController.getAllStudents);

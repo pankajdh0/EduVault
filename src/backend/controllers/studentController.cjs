@@ -2,8 +2,22 @@ const Student = require('../models/Student.cjs');
 
 exports.createStudent = async (req, res) => {
     try {
-        const student = await Student.create(req.body);
-        res.status(201).json(student);
+        const photo = {
+            data: req.files['photo'][0].buffer,
+            name: req.files['photo'][0].originalname,
+            contentType: req.files['photo'][0].mimetype
+        };
+
+        const signature = {
+            data: req.files['signature'][0].buffer,
+            name: req.files['signature'][0].originalname,
+            contentType: req.files['signature'][0].mimetype
+        };
+        debugger;   
+
+          const student = new Student({ ...req.body, photo, signature });
+          await student.save();
+        res.status(201).json(student);  
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
